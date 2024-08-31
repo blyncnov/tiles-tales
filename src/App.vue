@@ -21,9 +21,9 @@ export default {
   name: "Grid",
   setup() {
 
-    const selectedTiles = ref([]);
-    const hoveredBoxes = ref([]);
-    const startTiles = ref(null);
+    const selectedTiles = ref<number[]>([]);
+    const hoveredBoxes = ref<number[]>([]);
+    const startTiles = ref<number | null>(null);
 
     const timeLeft = ref(10);
     const timer = ref<ReturnType<typeof setInterval> | null>(null);
@@ -71,7 +71,6 @@ export default {
       }
     });
 
-
     const handleDoubleClick = (index: number) => {
       startTiles.value = index;
     };
@@ -85,7 +84,19 @@ export default {
     };
 
     const handleClick = () => {
-      selectedTiles.value = [...selectedTiles, ...hoveredBoxes, startTiles];
+      if (startTiles.value !== null) {
+        selectedTiles.value = [
+          ...selectedTiles.value,
+          ...hoveredBoxes.value,
+          startTiles.value
+        ];
+      } else {
+        selectedTiles.value = [
+          ...selectedTiles.value,
+          ...hoveredBoxes.value
+        ];
+      }
+
       hoveredBoxes.value = [];
       startTiles.value = null
     };
