@@ -1,14 +1,14 @@
 <template>
   <section>
     <div class="tiles_header">
-      <h2 class="selection_count">You Painted: {{ hoveredBoxes.length }} tiles </h2>
+      <h2 class="selection_count">You Painted: {{ hoveredTiles.length }} tiles </h2>
       <h2 class="selection_time_left">Timer: {{ formattedTime }}</h2>
     </div>
 
     <div class="grid">
       <div v-for="index in 100" :key="index" class="box" :class="{
         selected: selectedTiles.includes(index - 1),
-        highlight: hoveredBoxes.includes(index - 1),
+        highlight: hoveredTiles.includes(index - 1),
       }" @dblclick="handleDoubleClick(index - 1)" @mouseover="handleMouseOver(index - 1)" @click="handleClick"></div>
     </div>
   </section>
@@ -22,9 +22,10 @@ export default {
   setup() {
 
     const selectedTiles = ref<number[]>([]);
-    const hoveredBoxes = ref<number[]>([]);
+    const hoveredTiles = ref<number[]>([]);
     const startTiles = ref<number | null>(null);
 
+    const maxTime = ref(10);
     const timeLeft = ref(10);
     const timer = ref<ReturnType<typeof setInterval> | null>(null);
 
@@ -55,18 +56,20 @@ export default {
     })
 
     // Watch Timer
-    watch([timeLeft, hoveredBoxes], ([newTimeLeft, newHoveredBoxes]) => {
+    watch([timeLeft, hoveredTiles, selectedTiles], ([newTimeLeft, newHoveredTiles, newSelectedTiles]) => {
       if (newTimeLeft < 1) {
         alert('Time’s up! Better luck next time.');
 
         // RESET PAINT AND TIMER
-        hoveredBoxes.value = [];
+        hoveredTiles.value = [];
+        selectedTiles.value = [];
         timeLeft.value = 10;
-      } else if (newTimeLeft > 1 && newHoveredBoxes.length === 100) {
-        alert(`Incredible! You painted all the tiles with ${newTimeLeft} seconds remaining!`);
+      } else if (newTimeLeft > 1 && newHoveredTiles.length === 100 || newSelectedTiles.length === 100) {
+        alert(`Incredible! You painted all the tiles in ${maxTime.value - newTimeLeft} seconds!`);
 
         // RESET PAINT AND TIMER
-        hoveredBoxes.value = [];
+        hoveredTiles.value = [];
+        selectedTiles.value = [];
         timeLeft.value = 10;
       }
     });
@@ -77,8 +80,8 @@ export default {
 
     const handleMouseOver = (index: number) => {
       if (startTiles !== null) {
-        if (!hoveredBoxes.value.includes(index)) {
-          hoveredBoxes.value = [...hoveredBoxes.value, index];
+        if (!hoveredTiles.value.includes(index)) {
+          hoveredTiles.value = [...hoveredTiles.value, index];
         }
       }
     };
@@ -87,23 +90,21 @@ export default {
       if (startTiles.value !== null) {
         selectedTiles.value = [
           ...selectedTiles.value,
-          ...hoveredBoxes.value,
+          ...hoveredTiles.value,
           startTiles.value
         ];
       } else {
         selectedTiles.value = [
           ...selectedTiles.value,
-          ...hoveredBoxes.value
+          ...hoveredTiles.value
         ];
       }
-
-      hoveredBoxes.value = [];
       startTiles.value = null
     };
 
     return {
       selectedTiles,
-      hoveredBoxes,
+      hoveredTiles,
       handleDoubleClick,
       handleMouseOver,
       handleClick,
