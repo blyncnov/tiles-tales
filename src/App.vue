@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <section>
     <div class="tiles_header">
       <h2 class="selection_count">You Painted: {{ hoveredBoxes.length }} tiles </h2>
       <h2 class="selection_time_left">Timer: {{ formattedTime }}</h2>
@@ -11,7 +11,7 @@
         highlight: hoveredBoxes.includes(index - 1),
       }" @dblclick="handleDoubleClick(index - 1)" @mouseover="handleMouseOver(index - 1)" @click="handleClick"></div>
     </div>
-  </div>
+  </section>
 </template>
 
 <script lang="ts">
